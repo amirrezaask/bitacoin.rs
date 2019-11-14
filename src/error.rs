@@ -2,7 +2,7 @@ use core::fmt;
 use std::error;
 
 #[derive(Debug, Clone)]
-pub struct BitaCoinError(String);
+pub struct BitaCoinError(pub String);
 
 
 impl BitaCoinError {

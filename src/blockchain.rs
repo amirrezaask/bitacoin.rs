@@ -1,24 +1,27 @@
 use super::block::Block;
 use super::error::BitaCoinError;
 use super::hash;
+use super::storage::Storage;
 
 #[derive(Debug)]
-pub struct BlockChain {
+pub struct BlockChain<T: Storage> {
     blocks: Vec<Block>,
-    dificulty: usize
+    dificulty: usize,
+    storage: T
 }
 
-impl BlockChain {
-    pub fn new(dificulty: usize) -> Self {
+impl<T: Storage> BlockChain<T> {
+    pub fn new(dificulty: usize, storage: T) -> Self {
         let genesis_block = Block::new("Genesis".to_string(), "".to_string(), dificulty);
         BlockChain{
             blocks: vec![genesis_block],
             dificulty: dificulty,
+            storage: storage
         }
     }
     pub fn add(&mut self, data: String) {
         let this_block = Block::new(data, self.blocks[self.blocks.len()-1].hash.to_string(), self.dificulty);
-        self.blocks.push(this_block);
+        self.storage.append(this_block).unwrap(); //TODO: implement error handling 
     }
     pub fn validate(&self) -> Option<BitaCoinError> {
         for (idx, block) in self.blocks.iter().enumerate() {
